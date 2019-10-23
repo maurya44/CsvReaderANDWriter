@@ -6,15 +6,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using NLog;
+
 namespace CsvReaderWriter
 {
 
     public class DirWalker
     {
+
+        //private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static int countSkippedRows = 0;
         public static int countValidRows = 0;
         public static string outputCSVPath = @"D:\MSc CDA\SoftwareDevl\output.csv";
-        public static string outputLogPath = @"D:\MSc CDA\SoftwareDevl\log.txt";
+        public static string outputLogPath = @"D:\MSc CDA\SoftwareDevl\Application.Log";
         public static string inputDataPath = @"C:\Users\Maurya\Downloads\Sample Data";
         public class Customer
         {
@@ -45,6 +50,7 @@ namespace CsvReaderWriter
             int year = 0, month = 0, day = 0;
             StringBuilder st = new StringBuilder();
             StringBuilder sb = new StringBuilder();
+                 
             try
             {
                 string[] list = Directory.GetDirectories(path);
@@ -89,7 +95,7 @@ namespace CsvReaderWriter
                                 try
                                 {
                                     string customerInfo = cust.FirstName + "  " + cust.LastName + "  " + cust.StreetNumber + "  " + cust.Street + "  " + cust.City + "  " + cust.Province + "  " + cust.PostalCode + "  " + cust.Country + "  " + cust.PhoneNumber + "  " + cust.EmailAddress;
-                                    
+
                                     if (String.IsNullOrWhiteSpace(cust.FirstName))
                                     {
                                         st.AppendLine("\r\n  Log File Entry");
@@ -162,7 +168,7 @@ namespace CsvReaderWriter
                                         countSkippedRows++;
                                         continue;
                                     }
-                                    else if (String.IsNullOrWhiteSpace(Convert.ToString(cust.PhoneNumber)))
+                                    else if (String.IsNullOrWhiteSpace((cust.PhoneNumber)))
                                     {
                                         st.AppendLine("\r\n  Log File Entry");
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
@@ -182,6 +188,7 @@ namespace CsvReaderWriter
                                     }
                                     else
                                     {
+                                        
                                         sb.AppendLine(cust.FirstName + "," + cust.LastName + "," + cust.StreetNumber + "," + "\"" + cust.Street + "\"" + "," + cust.City + "," + cust.Province + "," + cust.PostalCode + "," + cust.Country + "," + cust.PhoneNumber + "," + cust.EmailAddress + ',' + year + "/" + month + "/" + day);
                                         countValidRows++;
                                     }
@@ -190,10 +197,10 @@ namespace CsvReaderWriter
                                 }
                                 catch (Exception e)
                                 {
-                                    using (StreamWriter sw = File.AppendText(outputLogPath))
-                                    {
-                                        Log("Execption Log Message :" + e.Message + "StackTrace :" + e.StackTrace, sw);
-                                    }
+                                    //using (StreamWriter sw = File.AppendText(outputLogPath))
+                                    //{
+                                        st.AppendLine("Execption Log Message :" + e.Message + "StackTrace :" + e.StackTrace);
+                                    //}
                                 }
 
                             }
@@ -207,23 +214,23 @@ namespace CsvReaderWriter
                 {
                     File.WriteAllText(outputCSVPath, sb.ToString());
                 }
-               
-                    File.AppendAllText(outputCSVPath, sb.ToString());
-                
+
+                File.AppendAllText(outputCSVPath, sb.ToString());
+
                 if (!File.Exists(outputLogPath))
                 {
                     File.WriteAllText(outputLogPath, st.ToString());
                 }
-                
-                    File.AppendAllText(outputLogPath, st.ToString());
-                
+
+                File.AppendAllText(outputLogPath, st.ToString());
+
             }
             catch (Exception ex)
             {
                 using (StreamWriter sw = File.AppendText(outputLogPath))
-                {
-                    Log("Execption Log Message : " + ex.Message + "StackTrace :" + ex.StackTrace, sw);
-                }
+               {
+                    Log("Exeception Log Message : " + ex.Message + "StackTrace :" + ex.StackTrace,sw);
+               }
             }
         }
         public static void Log(string logmessage, TextWriter tw)
@@ -240,27 +247,36 @@ namespace CsvReaderWriter
             DirWalker dw = new DirWalker();
             DateTime startTime = DateTime.Now;
             StringBuilder header = new StringBuilder();
-
-            header.AppendLine("FirstName" + "," + "LastName" + "," + "StreetNumber" + "," + "Street" + "," + "City" + "," + "Province" + "," + "PostalCode" + "," + "Country" + "," + "PhoneNumber" + "," + "EmailAddress" + "," + "Date");
-
-            if (!File.Exists(outputCSVPath))
+            try
             {
-                File.WriteAllText(outputCSVPath, header.ToString());
-            }
-            else
-            { 
-                File.AppendAllText(outputCSVPath, header.ToString());
-            }
+                header.AppendLine("FirstName" + "," + "LastName" + "," + "StreetNumber" + "," + "Street" + "," + "City" + "," + "Province" + "," + "PostalCode" + "," + "Country" + "," + "PhoneNumber" + "," + "EmailAddress" + "," + "Date");
 
-            dw.walk(inputDataPath);
+                if (!File.Exists(outputCSVPath))
+                {
+                    File.WriteAllText(outputCSVPath, header.ToString());
+                }
+                else
+                {
+                    File.AppendAllText(outputCSVPath, header.ToString());
+                }
 
-            DateTime endTime = DateTime.Now;
-            TimeSpan difference = endTime - startTime;
-            using (StreamWriter sw = File.AppendText(outputLogPath))
+                dw.walk(inputDataPath);
+
+                DateTime endTime = DateTime.Now;
+                using (StreamWriter sw = File.AppendText(outputLogPath))
+                {
+                Log("Total execution time in minutes : " + (endTime - startTime).TotalMinutes + "    Total Skipped Rows : " + countSkippedRows + "    Total Valid Rows : " + countValidRows,sw);
+                }
+
+            }
+            catch (Exception ex)
             {
-                Log("Total execution time in minutes : " + difference.TotalMinutes + "    Total Skipped Rows : " + countSkippedRows + "    Total Valid Rows : " + countValidRows, sw);
+                using (StreamWriter sw = File.AppendText(outputLogPath)) 
+                {
+                    Log("Exception while processing : " + ex.Message + " Stacktrace : " + ex.StackTrace,sw);
+                }
             }
-        }0
 
+        }
     }
 }
