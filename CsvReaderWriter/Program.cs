@@ -16,34 +16,12 @@ namespace CsvReaderWriter
 
         //private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public static int countSkippedRows = 0;
-        public static int countValidRows = 0;
-        public static string outputCSVPath = @"D:\MSc CDA\SoftwareDevl\output.csv";
-        public static string outputLogPath = @"D:\MSc CDA\SoftwareDevl\Application.Log";
+        public static int CountSkippedRows = 0;
+        public static int CountValidRows = 0;
+        public static string OutputCSVPath = @"D:\MSc CDA\SoftwareDevl\output.csv";
+        public static string OutputLogPath = @"D:\MSc CDA\SoftwareDevl\Application.Log";
         public static string inputDataPath = @"C:\Users\Maurya\Downloads\Sample Data";
-        public class Customer
-        {
-            [Index(0)]
-            public string FirstName { get; set; }
-            [Index(1)]
-            public string LastName { get; set; }
-            [Index(2)]
-            public int StreetNumber { get; set; }
-            [Index(3)]
-            public string Street { get; set; }
-            [Index(4)]
-            public string City { get; set; }
-            [Index(5)]
-            public string Province { get; set; }
-            [Index(6)]
-            public string PostalCode { get; set; }
-            [Index(7)]
-            public string Country { get; set; }
-            [Index(8)]
-            public string PhoneNumber { get; set; }
-            [Index(9)]
-            public string EmailAddress { get; set; }
-        }
+    
 
         public void walk(String path)
         {
@@ -80,8 +58,9 @@ namespace CsvReaderWriter
 
                         csv.Read();
                         IEnumerable<Customer> customerinfo = null;
-
-                        List<Customer> customerList = new List<Customer>();
+                        csv.Configuration.Delimiter = ",";
+                        csv.Configuration.MissingFieldFound = null;
+                        //List<Customer> customerList = new List<Customer>();
                         csv.Configuration.HasHeaderRecord = true;
                         if (csv != null)
                         {
@@ -102,7 +81,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("First Name is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.LastName))
@@ -111,7 +90,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Last Name is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(Convert.ToString(cust.StreetNumber)))
@@ -120,7 +99,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("StreetNumber is missing in row   " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.Street))
@@ -129,7 +108,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Street is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.City))
@@ -138,7 +117,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("City is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.Province))
@@ -147,7 +126,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Province is missing in row   " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.Country) || cust.Country.Any(char.IsDigit))
@@ -156,7 +135,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Country is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.PostalCode) || !cust.PostalCode.Any(char.IsDigit))
@@ -165,7 +144,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("PostalCode is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace((cust.PhoneNumber)))
@@ -174,7 +153,7 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Phone Number is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else if (String.IsNullOrWhiteSpace(cust.EmailAddress))
@@ -183,21 +162,21 @@ namespace CsvReaderWriter
                                         st.AppendLine($"{DateTime.Now.ToLongTimeString()}   { DateTime.Now.ToLongDateString()}");
                                         st.AppendLine("Email Address is missing in row    " + customerInfo + "\n");
                                         st.AppendLine("-------------------------------------");
-                                        countSkippedRows++;
+                                        CountSkippedRows++;
                                         continue;
                                     }
                                     else
                                     {
                                         
                                         sb.AppendLine(cust.FirstName + "," + cust.LastName + "," + cust.StreetNumber + "," + "\"" + cust.Street + "\"" + "," + cust.City + "," + cust.Province + "," + cust.PostalCode + "," + cust.Country + "," + cust.PhoneNumber + "," + cust.EmailAddress + ',' + year + "/" + month + "/" + day);
-                                        countValidRows++;
+                                        CountValidRows++;
                                     }
 
 
                                 }
                                 catch (Exception e)
                                 {
-                                    //using (StreamWriter sw = File.AppendText(outputLogPath))
+                                    //using (StreamWriter sw = File.AppendText(OutputLogPath))
                                     //{
                                         st.AppendLine("Execption Log Message :" + e.Message + "StackTrace :" + e.StackTrace);
                                     //}
@@ -210,24 +189,24 @@ namespace CsvReaderWriter
                     }
 
                 }
-                if (!File.Exists(outputCSVPath))
+                if (!File.Exists(OutputCSVPath))
                 {
-                    File.WriteAllText(outputCSVPath, sb.ToString());
+                    File.WriteAllText(OutputCSVPath, sb.ToString());
                 }
 
-                File.AppendAllText(outputCSVPath, sb.ToString());
+                File.AppendAllText(OutputCSVPath, sb.ToString());
 
-                if (!File.Exists(outputLogPath))
+                if (!File.Exists(OutputLogPath))
                 {
-                    File.WriteAllText(outputLogPath, st.ToString());
+                    File.WriteAllText(OutputLogPath, st.ToString());
                 }
 
-                File.AppendAllText(outputLogPath, st.ToString());
+                File.AppendAllText(OutputLogPath, st.ToString());
 
             }
             catch (Exception ex)
             {
-                using (StreamWriter sw = File.AppendText(outputLogPath))
+                using (StreamWriter sw = File.AppendText(OutputLogPath))
                {
                     Log("Exeception Log Message : " + ex.Message + "StackTrace :" + ex.StackTrace,sw);
                }
@@ -251,27 +230,27 @@ namespace CsvReaderWriter
             {
                 header.AppendLine("FirstName" + "," + "LastName" + "," + "StreetNumber" + "," + "Street" + "," + "City" + "," + "Province" + "," + "PostalCode" + "," + "Country" + "," + "PhoneNumber" + "," + "EmailAddress" + "," + "Date");
 
-                if (!File.Exists(outputCSVPath))
+                if (!File.Exists(OutputCSVPath))
                 {
-                    File.WriteAllText(outputCSVPath, header.ToString());
+                    File.WriteAllText(OutputCSVPath, header.ToString());
                 }
                 else
                 {
-                    File.AppendAllText(outputCSVPath, header.ToString());
+                    File.AppendAllText(OutputCSVPath, header.ToString());
                 }
 
                 dw.walk(inputDataPath);
 
                 DateTime endTime = DateTime.Now;
-                using (StreamWriter sw = File.AppendText(outputLogPath))
+                using (StreamWriter sw = File.AppendText(OutputLogPath))
                 {
-                Log("Total execution time in minutes : " + (endTime - startTime).TotalMinutes + "    Total Skipped Rows : " + countSkippedRows + "    Total Valid Rows : " + countValidRows,sw);
+                Log("Total execution time in minutes : " + (endTime - startTime).TotalMinutes + "    Total Skipped Rows : " + CountSkippedRows + "    Total Valid Rows : " + CountValidRows,sw);
                 }
 
             }
             catch (Exception ex)
             {
-                using (StreamWriter sw = File.AppendText(outputLogPath)) 
+                using (StreamWriter sw = File.AppendText(OutputLogPath)) 
                 {
                     Log("Exception while processing : " + ex.Message + " Stacktrace : " + ex.StackTrace,sw);
                 }
